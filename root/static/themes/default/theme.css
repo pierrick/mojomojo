@@ -8,7 +8,6 @@ body {
     color: #626262;
     font-size: 0.9em;
     font-family: Helvetica Neue,Arial, Helvetica, Geneva, sans-serif;
-    text-align: center;
 }
 
 .container {
@@ -307,6 +306,41 @@ p {
 
 .syntax_help table th {
     background-color: #f6f6f6;
+}
+
+#edit_form table {
+	border:0px;
+margin:0px;
+padding:0px;
+}
+
+#edit_form table td, #edit_form table th {
+margin:0px;
+padding:0px;
+	border:0px;
+}
+
+#edit_form table thead th, #edit_form table tfoot th {
+margin:0px;
+padding:0px;
+	border:0px;
+}
+
+#edit_form table tbody th, #edit_form table tbody td {
+margin:0px;
+padding:0px;
+    vertical-align: top;
+    text-align: left;
+}
+
+#edit_form table tfoot td {
+margin:0px;
+padding:0px;
+    border: 0px solid #000;
+}
+
+#edit_form table tr.odd td, #edit_form table tr.odd th {
+
 }
 
 /* @end */

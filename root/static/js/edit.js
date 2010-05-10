@@ -7,6 +7,7 @@ $(document).ready(function() {
     set_split_mode( $.cookies.get('split_edit') );
     setup_formatter_toolbar();
     setup_edit_help();
+    setup_mode();
     toggleDefaultValue($('#authorName'));  // auto-clear the 'anonymous_user' name for anon edits
 
     split_edit_button
@@ -54,7 +55,12 @@ var set_split_mode = function(split_mode) {
 
         $('#content_preview').height( window_height * 0.32 );
         $('#body').height( window_height * 0.30 );
+		if (xinha_editors) {
+		var editor = xinha_editors["body"];
 
+
+		editor.sizeEditor("100%",window_height * 0.30+"px");
+}
         $('#edit_form').css('margin-left', '0');
 
     } else {
@@ -66,6 +72,11 @@ var set_split_mode = function(split_mode) {
 
         $('#content_preview').height( window_height * 0.65 );
         $('#body').height( window_height * 0.58 );
+		if (xinha_editors) {
+		var editor = xinha_editors["body"];
+
+		editor.sizeEditor("100%",window_height * 0.58+"px");
+}
     }
 };
 
@@ -250,4 +261,73 @@ var setup_edit_help = function() {
     edithelp.prepend(nav);
 
     return tabs;
+};
+
+var setup_mode = function() {
+    $('#wiki_preserve').hide();
+    var mode = $('#wisywyg_mode');
+    mode.click(function () {
+      if (xinha_editors && mode.text() =='Wiki mode' ) {
+ 		var editor = xinha_editors["body"];
+		var html = editor.getEditorContent();
+        jQuery.ajax({
+          data: {content: html},
+          type: 'POST',
+          url:  $('#convert_html').attr('href'),
+          timeout: 2000,
+          error: function() {
+              $('#editspinner').hide();
+          },
+          success: function(r) {
+   			$('#formatter_toolbar').show();
+            $("#body").remove();
+            var html = '<textarea style="width:100%;height:180px;" name="body" id="body">'+ r +'</textarea>';
+            set_split_mode( $.cookies.get('split_edit') );
+            $("#formatter_toolbar").after(html); 
+            $(".htmlarea").hide();
+   			$('#wisywyg_mode').text('Wisywyg mode');
+    		$('#wiki_preserve').hide();
+    		$('#wiki_preserve input').attr('checked',false);
+
+		  	$('#body').keyup(function() {
+       				fetch_preview.only_every(on_change_refresh_rate);
+		        	oneshot_preview(fetch_preview, oneshot_pause);
+    	  	});
+   		  }
+        });
+
+      }
+      else {
+        jQuery.ajax({
+          data: {content: $('#body').attr('value')},
+          type: 'POST',
+          url:  $('#render_wisywyg_url').attr('href'),
+          timeout: 2000,
+          error: function() {
+              $('#editspinner').hide();
+          },
+          success: function(r) {
+              $('#body').attr('value',r);
+              $('#editspinner').hide();
+if (xinha_editors) {
+            $(".htmlarea").show();
+            $("#body").remove();
+}
+else {
+      Xinha.startEditors(xinha_editors);
+
+
+              xinha_init();
+      }
+              $('#formatter_toolbar').hide();
+              $('#wisywyg_mode').text('Wiki mode');
+    		  $('#wiki_preserve input').attr('checked',true);
+              $('#wiki_preserve').show();
+
+          }
+      });
+
+    }
+
+  });
 };

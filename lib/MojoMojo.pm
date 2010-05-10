@@ -15,6 +15,7 @@ use Catalyst qw/
     Unicode
     I18N
     Setenv
+    -Debug
     /;
 
 use Storable;
@@ -47,6 +48,13 @@ MojoMojo->config->{'Plugin::Cache'}{backend} = {
         'mojomojo-sharefile-'.Digest::MD5::md5_hex(MojoMojo->config->{home})
     ),
 };
+
+# TODO : Force Plugin::Static to serve HTML files without ignore_extensions 
+MojoMojo->config(
+        static => {
+            ignore_extensions => [ qw/asp php/ ],
+        },
+    );
 
 __PACKAGE__->config( authentication => {
     default_realm => 'members',

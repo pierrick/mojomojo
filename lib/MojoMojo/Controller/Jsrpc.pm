@@ -3,6 +3,9 @@ package MojoMojo::Controller::Jsrpc;
 use strict;
 use parent 'Catalyst::Controller';
 use HTML::Entities;
+use HTML::WikiConverter;
+use Text::Textile;
+use Text::MultiMarkdown;
 
 =head1 NAME
 
@@ -318,6 +321,64 @@ sub validate_perm_edit : Private {
     }
 
     $c->stash->{role} = $role;
+}
+
+sub render_dialect : Local {
+    my ( $self, $c, $dialect ) = @_;
+    if ($dialect eq 'MojoMojo::Formatter::Markdown') {
+        $dialect = 'MultiMarkdown';
+    }
+    elsif ($dialect eq 'MojoMojo::Formatter::Textile') {
+        $dialect = 'Textile';
+    }
+    my $wc = new HTML::WikiConverter(dialect => $dialect,link_style =>'mojomojo');
+    my $input=$wc->html2wiki( html => $c->req->params->{content} );
+    my $output = $c->loc("Please type something");
+    if ( $input && $input =~ /(\S+)/ ) {
+        $output = $input ;
+    }
+
+    unless ($output) {
+        $output = $c->loc('Your input is invalid, please reformat it and try again.');
+        $c->res->status(500);
+    }
+
+    $c->res->output($output);
+
+}
+sub render_wisywyg : Local {
+    my ( $self, $c ) = @_;
+    my $output = $c->loc("Please type something");
+    my $input  = $c->req->params->{content};
+    if ( $input && $input =~ /(\S+)/ ) {
+        $output = $c->model("DBIC::Content")->format_content( $c, $input );
+        if ($c->pref('main_formatter') eq 'MojoMojo::Formatter::Markdown') {
+            my $markdown = Text::MultiMarkdown->new(
+            markdown_in_html_blocks => 0,    # Allow Markdown syntax within HTML blocks.
+            use_metadata =>
+                0,  # Remove MultiMarkdown behavior change to make the top of the document metadata.
+            heading_ids => 0,    # Remove MultiMarkdown behavior change in <hX> tags.
+            img_ids     => 0,    # Remove MultiMarkdown behavior change in <img> tags.
+
+
+            );
+            $output = $markdown->markdown( $input );
+        }
+        else {
+            my $textile = Text::Textile->new(
+                flavor => 'xhtml1',
+                charset => 'utf-8',
+                char_encoding => 0,  # don't encode any other entities than <, >, " and &
+            );
+            $output = $textile->process( $input );
+        }
+}
+    unless ($output) {
+        $output = $c->loc('Your input is invalid, please reformat it and try again.');
+        $c->res->status(500);
+    }
+
+    $c->res->output($output);
 }
 
 =head1 AUTHOR

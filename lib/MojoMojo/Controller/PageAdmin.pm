@@ -5,6 +5,7 @@ use parent 'Catalyst::Controller::HTML::FormFu';
 
 eval {require Syntax::Highlight::Engine::Kate};
 my $kate_installed = !$@;
+use HTML::WikiConverter;
 
 =head1 NAME
 
@@ -210,7 +211,14 @@ sub edit : Global FormConfig {
 
         my $valid = $form->params;
         $valid->{creator} = $user_id;
-
+		if ($c->req->params->{'save_as_wiki'} ) {
+			if ($c->pref('main_formatter') eq 'MojoMojo::Formatter::Markdown' ) {
+		        $valid->{body}= new HTML::WikiConverter(dialect => 'MultiMarkdown',link_style =>'mojomojo')->html2wiki( html => $valid->{body} );
+			}
+			elsif ($c->pref('main_formatter') eq 'MojoMojo::Formatter::Textile' ) {
+    		    $valid->{body}= new HTML::WikiConverter(dialect => 'Textile',link_style =>'mojomojo')->html2wiki( html => $valid->{body} );
+			}
+		}
         if (@$proto_pages) {    # page doesn't exist yet
 
             $path_pages = $c->model('DBIC::Page')->create_path_pages(

@@ -14,5 +14,6 @@
         <li>[%loc('Attachments')%]</li>
         <li><a href="[% c.uri_for('permissions') %]">[%loc('Permissions')%]</a></li>
 [% END +%]
+        <li><a id="wisywyg_mode" href="#">Wisywyg mode</a></li>
     </ul>
 </div>
