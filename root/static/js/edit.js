@@ -280,6 +280,7 @@ var setup_mode = function() {
           },
           success: function(r) {
    			$('#formatter_toolbar').show();
+            $("#content_preview").show();
             $("#body").remove();
             var html = '<textarea style="width:100%;height:180px;" name="body" id="body">'+ r +'</textarea>';
             set_split_mode( $.cookies.get('split_edit') );
