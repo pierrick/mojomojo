@@ -50,44 +50,10 @@
        xinha_config = xinha_config ? xinha_config() : new Xinha.Config();
     
        //xinha_config.width  = '760px';
-       //xinha_config.height = '480px';
+       //xinha_config.height = '500px';
 
    
 
-xinha_config.Events.onKeyPress = function ( event )
-{
-    var editor = xinha_editors["body"];
-    if( !editor.isShortCut(event) ){
-  switch ( event.keyCode )
-  {    
-    case 27: // ESCAPE
-    {
-      if ( editor._unLink )
-      {
-        editor._unLink();
-        Xinha._stopEvent(ev);
-      }
-      break;
-    }
-    break;
-    
-    case 8: // KEY backspace
-    case 46: // KEY delete
-    {
-      // We handle the mozilla backspace directly??
-      if ( !ev.shiftKey && this.handleBackspace() )
-      {
-        Xinha._stopEvent(ev);
-      }
-    }
-  }
-
-    	var key=editor.getKey(event);
-        editor.insertHTML(key);
-    }
-    fetch_preview();
-    return false;
-}
   xinha_config.WysiwygWrap = { elements: ['div#container.container', 'div#content', 'div#current'] };
 xinha_config.pageStyleSheets = [ "[% c.uri_for_static('reset.css') %]","[% c.uri_for_static('mojomojo.css') %]","[% c.uri_for_static('themes/default/theme.css') %]"  ];
       xinha_editors   = Xinha.makeEditors(xinha_editors, xinha_config, xinha_plugins);

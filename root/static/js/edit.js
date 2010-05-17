@@ -309,6 +309,7 @@ var setup_mode = function() {
           success: function(r) {
               $('#body').attr('value',r);
               $('#editspinner').hide();
+            $("#content_preview").hide();
 if (xinha_editors) {
             $(".htmlarea").show();
             $("#body").remove();

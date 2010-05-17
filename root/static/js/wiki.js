@@ -301,16 +301,8 @@ $( function() {
 
 var fetch_preview = function() {
     $('#editspinner').show();
-	var body_content;
-    if (xinha_editors && $('#wisywyg_mode').text() =='Wiki mode' ) {
-    	var editor = xinha_editors["body"];
-		body_content =  editor.outwardHtml(editor.getHTML());
-	}
-	else  {
-		body_content= $('#body').attr('value')
-	}
     jQuery.ajax({
-        data: {content: body_content},
+        data: {content: $('#body').attr('value')},
         type: 'POST',
         url:  $('#preview_url').attr('href'),
         timeout: 2000,
